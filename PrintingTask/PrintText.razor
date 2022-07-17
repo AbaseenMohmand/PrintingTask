@@ -1,0 +1,49 @@
+﻿<h3>PrintText</h3>
+
+
+
+<button class="btn btn-primary" @onclick="ShowPopUp">Click </button>
+@if (Popup)
+{
+    <div>
+        <select class="form-select" aria-label="Default select example">
+            <option selected>Open this select menu</option>
+            <option value="1">A4</option>
+            <option value="2">Letter</option>
+
+        </select>
+        <br>
+        <br>
+        <button class="btn btn-primary" @onclick="PrintFile">PrintFile </button>
+
+    </div>
+}
+
+
+
+@code {
+    bool Popup = false;
+    private void ShowPopUp()
+    {
+        Popup = true;
+    }
+
+    string SelectedString = null;
+
+    private void PrintFile()
+    {
+        PrintDocument pd = new PrintDocument();
+        PaperSize pSize = new PaperSize();
+        if (SelectedString == "A4")
+            pSize.RawKind = (int)PaperKind.A4;
+        else if (SelectedString == "Letter")
+            pSize.RawKind = (int)PaperKind.Letter;
+        else
+            pSize.RawKind = (int)PaperKind.Legal;
+
+        pd.DefaultPageSettings.PaperSize = pSize;
+
+
+        pd.Print();
+    }
+}
