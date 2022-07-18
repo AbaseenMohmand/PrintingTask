@@ -1,4 +1,5 @@
-﻿<h3>PrintText</h3>
+﻿@using System.Drawing
+<h3>PrintText</h3>
 
 
 
@@ -6,11 +7,15 @@
 @if (Popup)
 {
     <div>
-        <select class="form-select" aria-label="Default select example">
-            <option selected>Open this select menu</option>
-            <option value="1">A4</option>
-            <option value="2">Letter</option>
+  @*      <select class="form-select" aria-label="Default select example">
+          
 
+        </select>*@
+         <select @onchange="DoStuff">  @*//pre-3.0 versions: onchange=@DoStuff*@
+            @foreach (var template in templates)
+            {
+                <option value=@template>@template</option>
+            }
         </select>
         <br>
         <br>
@@ -22,28 +27,67 @@
 
 
 @code {
+
+      @functions {
+        //use @code in razor components.
+        List<string> templates = new List<string>() { "A4", "Letter", "Legel"};
+        string SelectedString = "A4";
+
+        void DoStuff(ChangeEventArgs e)
+        {
+            SelectedString = e.Value.ToString();
+            // Console.WriteLine("It is definitely: " + SelectedString);
+        }
+}
+
     bool Popup = false;
     private void ShowPopUp()
     {
         Popup = true;
     }
 
-    string SelectedString = null;
 
     private void PrintFile()
     {
-        PrintDocument pd = new PrintDocument();
-        PaperSize pSize = new PaperSize();
-        if (SelectedString == "A4")
-            pSize.RawKind = (int)PaperKind.A4;
-        else if (SelectedString == "Letter")
-            pSize.RawKind = (int)PaperKind.Letter;
-        else
-            pSize.RawKind = (int)PaperKind.Legal;
+        //PrintDocument pd = new PrintDocument();
+        //PaperSize pSize = new PaperSize();
+        //if (SelectedString == "A4")
+        //    pSize.RawKind = (int)PaperKind.A4;
+        //else if (SelectedString == "Letter")
+        //    pSize.RawKind = (int)PaperKind.Letter;
+        //else
+        //    pSize.RawKind = (int)PaperKind.Legal;
 
-        pd.DefaultPageSettings.PaperSize = pSize;
+        //pd.DefaultPageSettings.PaperSize = pSize;
 
 
-        pd.Print();
+        //pd.Print();
+
+
+        string s = "string to print bgkuygfkytfy hguhbu jggulg7u utvikh";
+
+        PrintDocument p = new PrintDocument();
+        p.PrintPage += delegate (object sender1, PrintPageEventArgs e1)
+        {
+            e1.Graphics.DrawString(s, new Font("Times New Roman", 12), new SolidBrush(System.Drawing.Color.Black), new RectangleF(0, 0, p.DefaultPageSettings.PrintableArea.Width, p.DefaultPageSettings.PrintableArea.Height));
+
+        };
+        try
+        {
+            PaperSize pSize = new PaperSize();
+            if (SelectedString == "A4")
+                pSize.RawKind = (int)PaperKind.A4;
+            else if (SelectedString == "Letter")
+                pSize.RawKind = (int)PaperKind.Letter;
+            else
+                pSize.RawKind = (int)PaperKind.Legal;
+
+            p.DefaultPageSettings.PaperSize = pSize;
+            p.Print();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Exception Occured While Printing", ex);
+        }
     }
 }
